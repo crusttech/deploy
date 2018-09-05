@@ -37,10 +37,8 @@ case $SERVICE in
         TAG=${2:-"latest"}
 
         ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
-            ".remote.sam.sh" \
-            ${SERVICE} \
-            ${TAG}
-            $(base64 ../spa.conf.env) \
+            ".remote.spa.sh" \
+            ${TAG} \
             ${DEPLOYMENT}
     ;;
 
