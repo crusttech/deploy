@@ -22,7 +22,7 @@ case $SERVICE in
 
     ;;
 
-    sam|crm)
+    sam|crm|auth)
         TAG=${2:-"latest"}
 
         ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
