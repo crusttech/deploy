@@ -21,19 +21,21 @@ trap cleanup EXIT
 
 docker pull ${IMAGE}
 
+CURRENT=$(docker ps --quiet --all --no-trunc --filter="label=crust.service.type=api.${SERVICE}")
+
 CID=$(docker run ${DOCKER_RUN} \
     --expose 80 \
+    --volume /var/opt/crust.${SERVICE}.${TAG}/store:/crust/var/store \
     --env VIRTUAL_HOST=api.${SERVICE}.${TAG}.rustbucket.io \
     --env LETSENCRYPT_HOST=api.${SERVICE}.${TAG}.rustbucket.io \
     --env-file=${API_CONF_ENV_FILE} \
+    --hostname api.${SERVICE}.${TAG} \
     --label crust.service.type=api.${SERVICE} \
-    --label crust.service.version=api.${SERVICE} \
+    --label crust.service.version=${TAG} \
     --name "crust.api.${SERVICE}.${TAG}.${DEPLOYMENT}" \
     ${IMAGE})
 
 # Remove all containers but the one that we just stated
-docker ps --quiet --all --no-trunc --filter="ancestor=${IMAGE}" |
-    grep --invert-match $CID |
-    xargs --no-run-if-empty -n 1 docker rm -f
+echo ${CURRENT} | xargs --no-run-if-empty -n 1 docker rm -f
 
 echo "> https://api.${SERVICE}.${TAG}.rustbucket.io"

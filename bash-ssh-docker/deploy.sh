@@ -2,7 +2,6 @@
 
 #!/usr/bin/env bash
 
-set -x
 set -eu
 
 cd $(dirname "$0")

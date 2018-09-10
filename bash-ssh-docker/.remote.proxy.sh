@@ -16,6 +16,7 @@ docker run ${DOCKER_RUN} \
     --publish 80:80 --publish 443:443 \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
     --volume /var/run/docker.sock:/tmp/docker.sock:ro \
+
     --volume /etc/nginx/certs \
     --volume /etc/nginx/vhost.d \
     --volume /usr/share/nginx/html \
