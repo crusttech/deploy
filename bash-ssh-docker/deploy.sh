@@ -6,47 +6,71 @@ set -eu
 
 cd $(dirname "$0")
 
-source .env
-
-SERVICE=${1:-help}
+SERVICES=${1:-help}
 DEPLOYMENT=$(date +%Y-%m-%dT%H%M%S)
 DEPLOY_HOST=${DEPLOY_HOST:-rustbucket.io}
 DEPLOY_USER=${DEPLOY_USER:-root}
 
+TAG=${2:-"latest"}
+HOSTNAME=${3:-"latest"}
 
-case $SERVICE in
-    proxy)
-        ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
-            ".remote.proxy.sh"
+CONFIG_API="../api.${HOSTNAME}.env"
 
-    ;;
+if [ -x $CONFIG_API ]
+then
+    echo "Config file (${CONFIG_API}) not found."
+    exit 1
+fi
 
-    sam|crm|auth)
-        TAG=${2:-"latest"}
+CONFIG_SPA="../spa.${HOSTNAME}.config.js"
 
-        ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
-            ".remote.api.sh" \
-            ${SERVICE} \
-            ${TAG} \
-            $(base64 ../api.conf.env) \
-            ${DEPLOYMENT}
-    ;;
+if [ -x $CONFIG_SPA ]
+then
+    echo "Config file (${CONFIG_SPA}) not found."
+    exit 1
+fi
 
-    spa)
-        TAG=${2:-"latest"}
+for SERVICE in $(echo $SERVICES | sed "s/,/ /g")
+do
+    case $SERVICE in
+        proxy)
+            ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
+                ".remote.proxy.sh"
 
-        ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
-            ".remote.spa.sh" \
-            ${TAG} \
-            ${DEPLOYMENT}
-    ;;
+        ;;
 
-    *)
-        echo "Specify one of the supported services:
+        sam|crm|auth)
+            ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
+                ".remote.api.sh" \
+                $(base64 ${CONFIG_API}) \
+                ${DEPLOYMENT} \
+                ${SERVICE} \
+                ${TAG} \
+                ${HOSTNAME}
+        ;;
 
- - proxy
- - sam [tag:latest]
- - crm [tag:latest]
- - spa [tag:latest]
-        "
-esac
+        spa)
+            ssh ${DEPLOY_USER}@${DEPLOY_HOST} 'bash -s' < \
+                ".remote.spa.sh" \
+                $(base64 ${CONFIG_SPA}) \
+                ${DEPLOYMENT} \
+                ${TAG} \
+                ${HOSTNAME}
+        ;;
+
+        *)
+            echo "Specify one of the supported services:
+     - proxy
+     - auth [tag:latest] [host:latest]
+     - sam  [tag:latest] [host:latest]
+     - crm  [tag:latest] [host:latest]
+     - spa  [tag:latest] [host:latest]
+
+Format:
+     - [service:help] [tag:latest] [host:latest]
+
+Full combo:
+     - spa,auth,sam,crm latest beta
+"
+    esac
+done

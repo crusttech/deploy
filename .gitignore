@@ -1,4 +1,5 @@
 .cert
 .idea
-.env
+api.*.env
+spa.*.config.js
 */.env

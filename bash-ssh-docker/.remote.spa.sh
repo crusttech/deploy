@@ -5,34 +5,39 @@ set -eu
 # Container running params
 DOCKER_RUN="--detach --restart unless-stopped --net=party"
 
-TAG=${1:-latest}
 DEPLOYMENT=${2}
+SERVICE="spa"
 
-IMAGE=crusttech/spa:${TAG}
+SPA_CONFIG_FILE=~/.spa.config.js.${DEPLOYMENT}
+echo ${1}|base64 --decode > ${SPA_CONFIG_FILE}
+
+
+TAG=${3:-latest}
+IMAGE=crusttech/${SERVICE}:${TAG}
+
+HOSTNAME=${4:-latest}
+FQDN="${HOSTNAME}.rustbucket.io"
 
 docker pull ${IMAGE}
 
-# @todo if TAG=production then VIRTUAL_HOST=www.rustbucket.io
 
-CURRENT=$(docker ps --quiet --all --no-trunc --filter="label=crust.service.type=spa")
+CURRENT=$(docker ps --quiet --all --no-trunc --filter="label=crust.service.fqdn=${FQDN}")
 
-CID=$(docker run ${DOCKER_RUN} \
+docker run ${DOCKER_RUN} \
     --expose 80 \
+    --volume ${SPA_CONFIG_FILE}:/spa/static/config.js:ro \
     --env PORT=80 \
-    --env VIRTUAL_HOST=${TAG}.rustbucket.io \
-    --env LETSENCRYPT_HOST=${TAG}.rustbucket.io \
-    --hostname ${TAG} \
-    --label crust.service.type=spa \
-    --label crust.service.version=${TAG} \
-    --name "crust.spa.${TAG}.${DEPLOYMENT}" \
-    ${IMAGE})
-
-# Remove all containers but the one that we just stated
-docker ps --quiet --all --no-trunc --filter="ancestor=${IMAGE}" |
-    grep --invert-match $CID |
-    xargs --no-run-if-empty -n 1 docker rm -f
+    --env VIRTUAL_HOST=${FQDN} \
+    --env LETSENCRYPT_HOST=${FQDN} \
+    --hostname ${FQDN} \
+    --label "crust.service.fqdn=${FQDN}" \
+    --label "crust.service.type=${SERVICE}" \
+    --label "crust.service.version=${TAG}" \
+    --label "crust.service.hostname=${HOSTNAME}" \
+    --name "crust.${SERVICE}.${HOSTNAME}.${DEPLOYMENT}" \
+    ${IMAGE}
 
 # Remove all containers but the one that we just stated
 echo ${CURRENT} | xargs --no-run-if-empty -n 1 docker rm -f
 
-echo "> https://${TAG}.rustbucket.io"
+echo "> https://${FQDN}"
