@@ -1,50 +1,43 @@
-version: "3"
+version: '2'
 
 services:
   db1:
     image: percona:8.0
-    ports:
-      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: "crust"
-      MYSQL_DATABASE: "crust"
-      MYSQL_USER: "crust"
-      MYSQL_PASSWORD: "crust"
+      - MYSQL_ROOT_PASSWORD=crust
+      - MYSQL_DATABASE=crust
+      - MYSQL_USER=crust
+      - MYSQL_PASSWORD=crust
     volumes:
     - $PWD/data/db:/var/lib/mysql
+    - ./mysql-init-definer.sql:/docker-entrypoint-initdb.d/mysql-init-definer.sql
+    restart: on-failure
 
   sam:
-    build:
-      context: /go/src/github.com/crusttech/crust/.
-      dockerfile: /go/src/github.com/crusttech/crust/Dockerfile.sam
+    image: crusttech/api-sam
     depends_on:
       - db1
-    ports:
-      - "3000:3000"
+      - system
     env_file:
-      - crust.env
+      - $PWD/crust.env
+      - $PWD/crust-sam.env
     restart: on-failure
 
   crm:
-    build:
-      context: /go/src/github.com/crusttech/crust/.
-      dockerfile: /go/src/github.com/crusttech/crust/Dockerfile.crm
+    image: crusttech/api-crm
     depends_on:
       - db1
-    ports:
-      - "3001:3001"
+      - system
     env_file:
-      - crust.env
+      - $PWD/crust.env
+      - $PWD/crust-crm.env
     restart: on-failure
 
   system:
-    build:
-      context: /go/src/github.com/crusttech/crust/.
-      dockerfile: /go/src/github.com/crusttech/crust/Dockerfile.system
+    image: crusttech/api-system
     depends_on:
       - db1
-    ports:
-      - "3002:3002"
     env_file:
-      - crust.env
+      - $PWD/crust.env
+      - $PWD/crust-system.env
     restart: on-failure
