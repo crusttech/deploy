@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  crust-db1:
+    image: percona:8.0
+    networks:
+      - party
+    environment:
+      - MYSQL_ROOT_PASSWORD=crust
+      - MYSQL_DATABASE=crust
+      - MYSQL_USER=crust
+      - MYSQL_PASSWORD=crust
+    volumes:
+    - ./data/db:/var/lib/mysql
+    - ./mysql-init-definer.sql:/docker-entrypoint-initdb.d/mysql-init-definer.sql
+    restart: on-failure
+
+networks:
+  party:
+    external: true

@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  crust-sam:
+    image: crusttech/api-sam
+    networks:
+      - party
+    env_file:
+      - ./sam.env
+      - ../crust.env
+    restart: on-failure
+
+networks:
+  party:
+    external: true
