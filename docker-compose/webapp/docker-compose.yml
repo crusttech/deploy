@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  crust-system:
+    image: crusttech/webapp
+    networks:
+      - party
+    env_file:
+      - ./webapp.env
+      - ../crust.env
+    restart: on-failure
+
+networks:
+  party:
+    external: true
