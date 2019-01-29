@@ -1,8 +1,0 @@
-SHELL=/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-# MAILTO=devops@rustbucket.io
-
-* * * * * root /opt/deploy/deploy.sh --app webapp   --tag latest --fqdn latest.rustbucket.io
-* * * * * root /opt/deploy/deploy.sh --app api-auth --tag latest --fqdn auth.api.latest.rustbucket.io
-* * * * * root /opt/deploy/deploy.sh --app api-crm  --tag latest --fqdn crm.api.latest.rustbucket.io
-* * * * * root /opt/deploy/deploy.sh --app api-sam  --tag latest --fqdn sam.api.latest.rustbucket.io
