@@ -14,4 +14,6 @@ RUN chmod a+x /crust/*.sh
 ADD ./src/Dockerfile /crust/
 ADD ./src/nginx.conf /crust/
 
+EXPOSE 80
+
 ENTRYPOINT ["/crust/entrypoint.sh"]

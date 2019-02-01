@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  builder:
+    container_name: builder.rustbucket.co
+    image: crusttech/webapp-builder
+    hostname: builder.rustbucket.co
+    networks:
+      - party
+#    env_file:
+#      - ./.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+#      - ./docker-config.json:/root/.docker/config.json:ro
+    restart: on-failure
+    entrypoint: /crust/listen.sh
+
+networks:
+  party:
+    external: true
