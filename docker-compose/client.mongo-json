@@ -1,0 +1,14 @@
+{
+  "_id": ObjectID(),
+  "data": {
+    "response_types": ["code", "token id_token"],
+      "client_name": "Crust",
+      "client_secret_expires_at": 0,
+      "application_type": "web",
+      "redirect_uris": [
+      "https://system.api.local.crust.tech/oidc/callback"
+    ],
+      "client_id": "v8r3h389vh38r9vhr"
+  },
+  "lookup_key": "v8r3h389vh38r9vhr"
+}

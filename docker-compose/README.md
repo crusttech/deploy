@@ -7,19 +7,29 @@ Requirements:
 - Docker (18.09 or better)
 - Docker Compose (1.23 or better)
 
-## Structure
+## Main services (crust-* and didmos-*)
 
-All the services have a common deployment environment file (`crust.env`) which is in the service
-parent directory. Each service also has their local environment file (`[service].env`) in their
-individual service folders.
+### Configuration
 
-Generally for a test deployment, all you need to do is to rename the `VIRTUAL_HOST` variable for
-each individual service. Starting or stopping the services is as easy as running `./up.sh` and
-`./down.sh` in this folder.
+All the services have a common deployment environment file (`.env`) which is in the service
+parent directory. Each service also has their own environment file (`config.[service].env`, 
+`config.[service].js`) and variables under `service/environment` in `docker-compose.yml`.
 
-Individual services might need data storage. By default, a `data` folder may be created in the
-service folder. If you need to back up your services, your best bet is to shut down the service,
-and copy the files to your backup storage space.
+
+
+### Starting & stopping
+
+Generally for a test deployment, all you need to do is to rename the `DOMAIN` variable in the
+`.env` file. Starting or stopping the services is as easy as running `docker-compose up -d` and
+`docker-compose down`. 
+
+### Data
+
+Some of the services need data storage. By default, a `data` subfolder is created. If you need 
+to back up your services, your best bet is to shut down the service, and copy the files to your 
+backup storage space.
+
+
 
 The services are as follows:
 

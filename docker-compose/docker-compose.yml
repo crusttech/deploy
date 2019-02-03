@@ -1,0 +1,179 @@
+version: '3.1'
+
+services:
+  crust-db:
+    image: percona:8.0
+    networks:
+      - crust
+    env_file:
+      - config.crust-db.env
+    volumes:
+      - ./data/crust-db:/var/lib/mysql
+    restart: on-failure
+
+  crust-api-system:
+    image: crusttech/api-system
+    depends_on:
+      - crust-db
+      - didmos-satosa
+    networks:
+      - party
+      - crust
+    env_file:
+      - config.crust-api.env
+      - config.crust-api-system.env
+    environment:
+      VIRTUAL_HOST:            system.api.${DOMAIN}
+      LETSENCRYPT_HOST:        system.api.${DOMAIN}
+      AUTH_JWT_COOKIE_DOMAIN:  .api.${DOMAIN}
+      AUTH_OIDC_ISSUER:        https://satosa.didmos.${DOMAIN}
+      AUTH_OIDC_REDIRECT_URL:  https://system.api.${DOMAIN}/oidc/callback
+      AUTH_OIDC_APP_URL:       https://${DOMAIN}/
+      AUTH_OIDC_COOKIE_DOMAIN: .${DOMAIN}
+    volumes:
+      - ./data/crust-api-system/store:/crust/var/store
+    restart: on-failure
+
+  crust-api-crm:
+    image: crusttech/api-crm
+    depends_on:
+      - crust-db
+    networks:
+      - party
+      - crust
+    env_file:
+      - config.crust-api.env
+      - config.crust-api-crm.env
+    environment:
+      VIRTUAL_HOST:     crm.api.${DOMAIN}
+      LETSENCRYPT_HOST: crm.api.${DOMAIN}
+    volumes:
+      - ./data/crust-api-crm/store:/crust/var/store
+    restart: on-failure
+
+  crust-api-messaging:
+    image: crusttech/api-messaging
+    depends_on:
+      - crust-db
+    networks:
+      - party
+      - crust
+    env_file:
+      - config.crust-api.env
+      - config.crust-api-messaging.env
+    environment:
+      VIRTUAL_HOST:     messaging.api.${DOMAIN}
+      LETSENCRYPT_HOST: messaging.api.${DOMAIN}
+    volumes:
+      - ./data/crust-api-messaging/store:/crust/var/store
+    restart: on-failure
+
+  crust-webapp:
+    image: crusttech/webapp
+    networks:
+      - party
+    environment:
+      VIRTUAL_HOST:     ${DOMAIN}
+      LETSENCRYPT_HOST: ${DOMAIN}
+    depends_on:
+      - crust-api-crm
+      - crust-api-messaging
+      - crust-api-system
+      - didmos-frontend
+      - didmos-satosa
+    volumes:
+      - ./config.crust-webapp.js:/crust/webapp/config.js:ro
+      - ./config.crust-webapp.js:/crust/webapp/crm/config.js:ro
+      - ./config.crust-webapp.js:/crust/webapp/messaging/config.js:ro
+      - ./config.crust-webapp.js:/crust/webapp/admin/config.js:ro
+    restart: on-failure
+
+  didmos-mongo:
+    image: crusttech/didmos2-mongo
+    restart: always
+    networks:
+      - didmos
+    env_file:
+      - config.didmos-mongo.env
+    environment:
+      SATOSA_FRONTEND: https://frontend.didmos.${DOMAIN}
+    volumes:
+      - ./data/didmos-mongo:/data/db
+
+  didmos-mongo-express:
+    image: mongo-express
+    restart: always
+    networks:
+      - party
+      - didmos
+    env_file:
+      - config.didmos-mongo-express.env
+    environment:
+      VIRTUAL_HOST:     mongo-express.didmos.${DOMAIN}
+      VIRTUAL_PORT:     8081
+      LETSENCRYPT_HOST: mongo-express.didmos.${DOMAIN}
+
+  didmos-satosa:
+    image: crusttech/didmos2-satosa
+    depends_on:
+      - didmos-mongo
+      - didmos
+    networks:
+      - party
+      - didmos
+    env_file:
+      - config.didmos-satosa.env
+    environment:
+      VIRTUAL_HOST:            satosa.didmos.${DOMAIN}
+      LETSENCRYPT_HOST:        satosa.didmos.${DOMAIN}
+      SATOSA_BASE_HOST:        satosa.didmos.${DOMAIN}
+      SATOSA_REGISTRATION_URL: https://frontend.didmos.${DOMAIN}
+    volumes:
+      - ./data/didmos-satosa/credentials:/etc/satosa/credentials
+
+  didmos-ldap:
+    image: crusttech/didmos2-ldap
+    networks:
+      - didmos
+    depends_on:
+      - didmos-mongo
+    env_file:
+      - config.didmos-ldap.env
+    volumes:
+      - ./data/didmos-ldap:/var/lib/ldap
+
+  didmos:
+    image: crusttech/didmos2-didmos
+    depends_on:
+      - didmos-ldap
+    networks:
+      - party
+      - didmos
+    env_file:
+      - config.didmos.env
+    environment:
+      - VIRTUAL_HOST=didmos.${DOMAIN}
+      - LETSENCRYPT_HOST=didmos.${DOMAIN}
+      - LUI_OIDC_AUTH_SERVER=https://satosa.didmos.${DOMAIN}/OIDC/
+      # Be careful with dicts/lists as they handle quotes differently
+      - SELF_REG_VALIDATION_ENDPOINT='https://frontend.didmos.${DOMAIN}/setpassword'
+
+  didmos-frontend:
+    image: crusttech/didmos2-frontend
+    networks:
+      - party
+      - didmos
+    env_file:
+      - config.didmos-frontend.env
+    environment:
+      VIRTUAL_HOST:      frontend.didmos.${DOMAIN}
+      LETSENCRYPT_HOST:  frontend.didmos.${DOMAIN}
+      OIDC_FE_ISSUER:    https://satosa.didmos.${DOMAIN}
+      FE_URL:            https://frontend.didmos.${DOMAIN}
+      BE_URL:            https://didmos.${DOMAIN}
+
+networks:
+  crust:
+  didmos:
+  party:
+    external: true

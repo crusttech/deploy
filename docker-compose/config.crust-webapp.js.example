@@ -1,0 +1,17 @@
+window.CrustConfig = {
+  system: {
+    baseUrl: 'https://system.api.local.crust.tech'
+  },
+
+  messaging: {
+    baseUrl: 'https://messaging.api.local.crust.tech'
+  },
+
+  crm: {
+    baseUrl: 'https://crm.api.local.crust.tech'
+  },
+
+  webapp: {
+    baseUrl: 'https://local.crust.tech'
+  },
+}
