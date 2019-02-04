@@ -21,10 +21,10 @@ esac
 
 case $REPO in
   crust)
-    ./build-webapp-image.sh --git-repository $REPO --branch=$BRANCH
+    ./build-api-image.sh --git-repository $REPO --branch=$BRANCH
     ;;
   webapp-*)
-    ./build-api-image.sh --git-repository $REPO --branch=$BRANCH
+    ./build-webapp-image.sh --git-repository $REPO --branch=$BRANCH
     ;;
   *)
     echo "error: unsupported repository $REPO"
