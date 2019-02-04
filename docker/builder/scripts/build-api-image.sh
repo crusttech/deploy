@@ -66,7 +66,7 @@ done
 pfix () {
     PREFIX=${1:-""}
     while read line; do
-      echo -e "$PREFIX\t$line\n"
+      echo -e "$PREFIX\t$line"
     done
 }
 
@@ -76,13 +76,11 @@ gitUpdate () {
 
     (
       if [ -d ${REPO} ]; then
-          git -C ${REPO} fetch ${QUIET_GIT} --all --prune
+          git -C ${REPO} reset --hard
+          git -C ${REPO} pull --force -n
       else
-          git clone ${QUIET_GIT} --depth=1 "${GIT_REMOTE_BASE}/${REPO}.git"
+          git clone ${QUIET_GIT} -b ${BRANCH} "${GIT_REMOTE_BASE}/${REPO}.git" ${REPO}
       fi;
-
-      git -C ${REPO} checkout --quiet ${BRANCH}
-      git -C ${REPO} reset --quiet origin/${BRANCH} --hard
     ) 2>&1 | pfix "git clone/fetch $REPO"
 }
 
