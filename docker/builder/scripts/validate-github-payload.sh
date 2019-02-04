@@ -32,6 +32,9 @@ if [[ $hmac == $digest ]]; then
   exit 0
 fi;
 
+# stdout goes back as a response, stderr stays here
+(>&2 echo $payload)
+
 echo -e "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\n"
 echo "I'm not Crust.\r\n\r\n"
 exit 1

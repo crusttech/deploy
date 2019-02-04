@@ -12,9 +12,7 @@ push:
 enter:
 	docker run \
   	--volume /var/run/docker.sock:/var/run/docker.sock \
-  	--volume `pwd`/entrypoint.sh:/crust/entrypoint.sh \
-  	--volume `pwd`/listen.sh:/crust/listen.sh \
-  	--volume `pwd`/webhook-handler.sh:/crust/webhook-handler.sh \
+  	--volume `pwd`/scripts:/scripts \
   	--privileged -it \
   	--publish 80 \
   	--entrypoint bash \
