@@ -2,6 +2,8 @@
 
 set -eu
 
+PAYLOAD_FILE=${1:-"/tmp/payload.json"}
+
 # parse endpoint (only works for POST)
 read request
 url="${request#POST }"
@@ -27,14 +29,15 @@ read -r -t 10 -n ${clen:-"0"} payload
 digest=$(echo -n $payload | openssl sha1 -hmac $TRIGGER_TOKEN | cut -d= -f2 | tr -d ' \n')
 
 if [[ $hmac == $digest ]]; then
+  # Store payload
+  echo $payload > $PAYLOAD_FILE
+
   echo -e "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n"
-  echo "I'm Crust.\r\n\r\n"
+  echo -e "I'm Crust.\r\n\r\n"
   exit 0
 fi;
 
-# stdout goes back as a response, stderr stays here
-(>&2 echo $payload)
 
 echo -e "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\n"
-echo "I'm not Crust.\r\n\r\n"
+echo -e "I'm not Crust.\r\n\r\n"
 exit 1

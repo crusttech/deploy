@@ -6,7 +6,7 @@ case ${1:-""} in
   crust|api)
     ./build-api-image.sh $@
     ;;
-  webapp-*)
+  webapp|webapp-*)
     ./build-webapp-image.sh $@
     ;;
   *)

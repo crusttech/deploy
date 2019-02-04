@@ -2,19 +2,20 @@
 
 set -eu
 
-PAYLOAD=$(cat -)
+PAYLOAD_FILE=${1:-"/tmp/payload.json"}
+PAYLOAD=$(cat $PAYLOAD_FILE)
 
 REF=$(echo $PAYLOAD | jq -r '.ref' )
 REPO=$(echo $PAYLOAD | jq -r '.repository.name' | cut -d"/" -f 2)
 BRANCH=""
 
 case $REF in
-  refs/heads/beta)
+  refs/heads/latest)
     BRANCH=$(echo $REF | cut -d"/" -f 3)
     ;;
   *)
     echo "error: unsupported ref $REF"
-    exit 1;
+    exit 0;
     ;;
 esac
 
@@ -26,7 +27,7 @@ case $REPO in
     ./build-api-image.sh --git-repository $REPO --branch=$BRANCH
     ;;
   *)
-    echo "error: unsupported repostory $REPO"
-    exit 1;
+    echo "error: unsupported repository $REPO"
+    exit 0;
     ;;
 esac

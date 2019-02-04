@@ -146,30 +146,30 @@ printf "webapp builder (branch: $BRANCH)\tstart at %s\n" `date +%Y-%m-%dT%H:%M:%
 BUILD_DIR="/build/webapp/$BRANCH"
 mkdir -p $BUILD_DIR && cd $BUILD_DIR
 
-gitUpdate webapp-chrome # @todo rename to webapp-unify
+gitUpdate webapp-unify
 gitUpdate webapp-crm
 gitUpdate webapp-messaging
 gitUpdate webapp-admin
 
-yarnInstall webapp-chrome # @todo rename to webapp-unify
+yarnInstall webapp-unify
 yarnInstall webapp-crm
 yarnInstall webapp-messaging
 yarnInstall webapp-admin
 
-yarnBuild webapp-chrome # @todo rename to webapp-unify
+yarnBuild webapp-unify
 yarnBuild webapp-crm
 yarnBuild webapp-messaging
 yarnBuild webapp-admin
 
 rm -rf ./dist
 
-mv webapp-chrome/dist     ./
+mv webapp-unify/dist     ./
 mv webapp-crm/dist        ./dist/crm
 mv webapp-messaging/dist  ./dist/messaging
 mv webapp-admin/dist      ./dist/admin
 
-cp webapp-chrome/docker/Dockerfile ./dist/
-cp webapp-chrome/docker/nginx.conf ./dist/
+cp webapp-unify/docker/Dockerfile ./dist/
+cp webapp-unify/docker/nginx.conf ./dist/
 
 dockerBuild
 dockerPush
