@@ -124,6 +124,7 @@ dockerBuild () {
   [[ ${SKIP_DOCKER_BUILD} == "1" ]] && return 0
 
   (
+    cd final
     docker build --no-cache --rm ${QUIET_DOCKER} --tag ${DOCKER_IMAGE} .
   ) 2>&1 | pfix "docker build"
 }
@@ -159,15 +160,16 @@ yarnBuild webapp-crm
 yarnBuild webapp-messaging
 yarnBuild webapp-admin
 
-rm -rf ./dist
+rm -rf final
+mkdir -p final
 
-mv webapp-unify/dist     ./
-mv webapp-crm/dist        ./dist/crm
-mv webapp-messaging/dist  ./dist/messaging
-mv webapp-admin/dist      ./dist/admin
+mv webapp-unify/dist      ./final
+mv webapp-crm/dist        ./final/dist/crm
+mv webapp-messaging/dist  ./final/dist/messaging
+mv webapp-admin/dist      ./final/dist/admin
 
-cp webapp-unify/docker/Dockerfile ./dist/
-cp webapp-unify/docker/nginx.conf ./dist/
+cp webapp-unify/docker/Dockerfile ./final/
+cp webapp-unify/docker/nginx.conf ./final/
 
 dockerBuild
 dockerPush
