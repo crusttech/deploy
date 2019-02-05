@@ -3,7 +3,7 @@
 .cert
 .idea
 api.*.env
-spa.*.config.js
+webapp.*.config.js
 */.env
 NOTES
 TODO
