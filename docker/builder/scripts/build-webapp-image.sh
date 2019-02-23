@@ -89,12 +89,8 @@ gitUpdate () {
     REPO=$1
 
     (
-      if [ -d ${REPO} ]; then
-          git -C ${REPO} reset --hard
-          git -C ${REPO} pull --force -n
-      else
-          git clone ${QUIET_GIT} -b ${BRANCH} "${GIT_REMOTE_BASE}/${REPO}.git" ${REPO}
-      fi;
+      rm -rf ${REPO}
+      git clone ${QUIET_GIT} -b ${BRANCH} "${GIT_REMOTE_BASE}/${REPO}.git" ${REPO}
     ) 2>&1 | pfix "git clone/fetch $REPO"
 }
 
