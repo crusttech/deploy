@@ -100,19 +100,6 @@ services:
     volumes:
       - ./data/didmos-mongo:/data/db
 
-  didmos-mongo-express:
-    image: mongo-express
-    restart: always
-    networks:
-      - party
-      - didmos
-    env_file:
-      - config.didmos-mongo-express.env
-    environment:
-      VIRTUAL_HOST:     mongo-express.didmos.${DOMAIN}
-      VIRTUAL_PORT:     8081
-      LETSENCRYPT_HOST: mongo-express.didmos.${DOMAIN}
-
   didmos-satosa:
     image: crusttech/didmos2-satosa
     depends_on:
