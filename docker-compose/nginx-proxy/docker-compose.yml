@@ -16,6 +16,7 @@ services:
       - ./data/htpasswd:/etc/nginx/htpasswd
       - ./data/vhost.d:/etc/nginx/vhost.d
       - ./data/html:/usr/share/nginx/html
+      - ./conf.d/custom.conf:/etc/nginx/conf.d/custom.conf:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
     restart: always
 
