@@ -144,6 +144,8 @@ services:
       - LUI_OIDC_AUTH_SERVER=https://satosa.didmos.${DOMAIN}/OIDC/
       # Be careful with dicts/lists as they handle quotes differently
       - SELF_REG_VALIDATION_ENDPOINT='https://frontend.didmos.${DOMAIN}/setpassword'
+      - SELF_REG_MAIL_BODY_CRUSTURL='https://${DOMAIN}'
+
 
   didmos-frontend:
     image: crusttech/didmos2-frontend:${DIDMOS_VERSION}
