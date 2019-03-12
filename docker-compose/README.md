@@ -13,18 +13,54 @@ Requirements:
 ### Configuration
 
 All the services have a common deployment environment file `.env`. Each service also has their 
-own environment file (`config.[service].env`,  `config.[service].js`) and variables under 
+own environment file (`config.[service].env`,  `config.crust-webapp.js`) and variables under 
 `service/environment` in `docker-compose.yml`.
 
+Copy or rename examples configs:
+```sh
+find -maxdepth 1 -type f -name '*.example' | sed -e 's/.example//g' | xargs -I{} -n 1 cp {}.example {}
+```
+
+#### Changing domain name
+If you want to give Crust a test run on your localhost you can leave all settings as they are.
+We've configured our DNS to point `*.local.crust.tech` to `127.0.0.1`. There is also a subscription
+key inside `config.crust-api.env.example` that allows you to use Crust on that domain without 
+limitations.
+
+##### Full list of domains Crust uses:
+
+ - `$DOMAIN`
+ - `system.api.${DOMAIN}`
+ - `crm.api.${DOMAIN}`
+ - `messaging.api.${DOMAIN}`
+ - `didmos.${DOMAIN}`
+ - `satosa.didmos.${DOMAIN}`
+ - `frontend.didmos.${DOMAIN}`
+
+Make sure all domains point to your server. If your domain registrar/dns service provider supports
+wildcard entries, we suggest you use that.
+
+
 Generally for a test deployment, all you need to do is to rename the `DOMAIN` variable in the
-`.env` file.
+`.env` file and in `config.crust-webapp.js`
+
+#### JWT Secret
+
+
+#### SMTP / Email sending capabilities
+There are a few functionalities in Crust and Didmos that have email sending capabilities. To 
+enable them, please configure `SMTP_*` variables to enable sending through a working SMTP service.
+
+For local testing, you can use MailHog. Follow setup instructions at [MailHog's GitHub page](https://github.com/mailhog/MailHog)
+and point `SMTP_HOST to the mailhog instance.
+
 
 ### Networking
 
 All the containers assume the existence of a `party` network. If you haven't created one, you
 can do that by issuing the following command:
 
-```
+```sh
 docker network create -d bridge --subnet 172.25.0.0/24 party
 ```
 
@@ -57,7 +93,7 @@ The project relies on a running [jwilder/nginx-proxy](https://github.com/jwilder
 container for routing, and an example service for it is also provided here. To run
 the service, issue the following commands (as root or a user in the docker group):
 
-```
+```sh
 cd nginx-proxy && docker-compose up -d
 ```
 
@@ -69,5 +105,38 @@ To configure the virtual hosts, individual exposed containers have `VIRTUAL_HOST
 
 ### Starting & stopping Crust services
 
- Starting or stopping the services is as easy as running `docker-compose up -d` and
-`docker-compose down`. 
+Starting or stopping is as easy as running `docker-compose up -d` for starting and `docker-compose down`
+for stopping all services. 
+
+### Updating images
+
+```sh
+docker-compose pull
+docker-compose up -d
+```
+
+### Signing-in
+
+In case you do not have SMTP capabilities and therefore can not register new users, you can try logging in with
+`super@admin.de` and `secret` for password. 
+
+### Troubleshooting
+
+#### MySQL refuses to start due to write access to `data/crust-db`. 
+You'll have to adjust ownership or reconfigure docker-compose.yml 
+to use a different kind of volume.
+
+To adjust permissions, see UID (numeric value) of the user running mysql insider percona image. Should be `1001`.
+Change directory ownership: 
+```sh
+chown -R 1001:1001 data/crust-db 
+```
+
+#### Backend returning 500 HTTP error
+Make sure you check logs in your system/messaging/crm service.
+
+Possible reasons:
+ - Most likely you've changed domain and should also change subscription key.
+
+#### 404 HTTP error on `system.api..../oidc`
+System service could not register OpenID Connect client with didmos. Inspect the logs of both services.

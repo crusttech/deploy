@@ -1,17 +1,22 @@
+const domain = 'local.crust.tech'
+
 window.CrustConfig = {
   system: {
-    baseUrl: 'https://system.api.local.crust.tech'
+    baseUrl: `http://system.api.${domain}`,
   },
 
   messaging: {
-    baseUrl: 'https://messaging.api.local.crust.tech'
+    baseUrl: `http://messaging.api.${domain}`,
   },
 
   crm: {
-    baseUrl: 'https://crm.api.local.crust.tech'
+    baseUrl: `http://crm.api.${domain}`,
   },
 
   webapp: {
-    baseUrl: 'https://local.crust.tech'
+    baseUrl: `http://${domain}`,
+    auth: {
+      adtSignOutUrl: `http://satosa.didmos.${domain}/didmos/logout/`,
+    },
   },
 }
