@@ -44,6 +44,7 @@ services:
     env_file:
       - config.crust-api.env
       - config.crust-api-crm.env
+      - config.crust-api-system.env
     environment:
       VIRTUAL_HOST:     crm.api.${DOMAIN}
       LETSENCRYPT_HOST: crm.api.${DOMAIN}
@@ -61,6 +62,7 @@ services:
     env_file:
       - config.crust-api.env
       - config.crust-api-messaging.env
+      - config.crust-api-system.env
     environment:
       VIRTUAL_HOST:     messaging.api.${DOMAIN}
       LETSENCRYPT_HOST: messaging.api.${DOMAIN}
