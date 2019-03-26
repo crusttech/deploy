@@ -48,6 +48,11 @@ services:
     environment:
       VIRTUAL_HOST:     crm.api.${DOMAIN}
       LETSENCRYPT_HOST: crm.api.${DOMAIN}
+      AUTH_JWT_COOKIE_DOMAIN:  .api.${DOMAIN}
+      AUTH_OIDC_ISSUER:        https://satosa.didmos.${DOMAIN}
+      AUTH_OIDC_REDIRECT_URL:  https://system.api.${DOMAIN}/oidc/callback
+      AUTH_OIDC_APP_URL:       https://${DOMAIN}/
+      AUTH_OIDC_COOKIE_DOMAIN: .${DOMAIN}
     volumes:
       - ./data/crust-api-crm/store:/crust/var/store
     restart: on-failure
@@ -66,6 +71,11 @@ services:
     environment:
       VIRTUAL_HOST:     messaging.api.${DOMAIN}
       LETSENCRYPT_HOST: messaging.api.${DOMAIN}
+      AUTH_JWT_COOKIE_DOMAIN:  .api.${DOMAIN}
+      AUTH_OIDC_ISSUER:        https://satosa.didmos.${DOMAIN}
+      AUTH_OIDC_REDIRECT_URL:  https://system.api.${DOMAIN}/oidc/callback
+      AUTH_OIDC_APP_URL:       https://${DOMAIN}/
+      AUTH_OIDC_COOKIE_DOMAIN: .${DOMAIN}
     volumes:
       - ./data/crust-api-messaging/store:/crust/var/store
     restart: on-failure
