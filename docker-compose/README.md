@@ -108,6 +108,23 @@ To configure the virtual hosts, individual exposed containers have `VIRTUAL_HOST
 Starting or stopping is as easy as running `docker-compose up -d` for starting and `docker-compose down`
 for stopping all services. 
 
+It might happen that didmos2 authentication backend containers do not get their SSL certificates as
+fast as Crust system api needs, so we recomend that you first start didmos2 containers:
+```bash
+docker-compose up -d didmos-satosa didmos-frontend
+```
+
+Wait for SSL certificates to be ready (should return JSON doc):
+```bash
+curl -i https://satosa.didmos.${DOMAIN}/.well-known/openid-configuration
+```
+
+And then all crust services with:
+```bash
+docker-compose up -d crust-webapp
+```
+
+
 ### Updating images
 
 ```sh
@@ -155,7 +172,7 @@ to use a different kind of volume.
 To adjust permissions, see UID (numeric value) of the user running mysql insider percona image. Should be `1001`.
 Change directory ownership: 
 ```sh
-chown -R 1001:1001 data/crust-db 
+chown -R 1001:1001 data/crust-db && docker-compose restart crust-db
 ```
 
 #### Backend returning 500 HTTP error
@@ -166,3 +183,4 @@ Possible reasons:
 
 #### 404 HTTP error on `system.api..../oidc`
 System service could not register OpenID Connect client with didmos. Inspect the logs of both services.
+See "Starting & stopping Crust services" chapter.
