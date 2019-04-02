@@ -15,13 +15,12 @@ services:
       - crust-db
     env_file:
       - config.crust-api.env
-      - config.crust-api-system.env
     environment:
       VIRTUAL_HOST:            ${DOMAIN}
       LETSENCRYPT_HOST:        ${DOMAIN}
       AUTH_JWT_COOKIE_DOMAIN:  ${DOMAIN}
     volumes:
-      - ./data/crust-api-system/store:/crust/var/store
+      - ./data/store:/crust/var/store
       - ./config.crust-webapp.js:/crust/webapp/config.js:ro
       - ./config.crust-webapp.js:/crust/webapp/crm/config.js:ro
       - ./config.crust-webapp.js:/crust/webapp/messaging/config.js:ro
