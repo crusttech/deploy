@@ -120,6 +120,32 @@ docker-compose up -d
 In case you do not have SMTP capabilities and therefore can not register new users, you can try logging in with
 `super@admin.de` and `secret` for password. 
 
+
+#### Permissions & role membership
+
+Crust comes with a small CLI toolbox. You can access it inside `crust-api-system` container like this:
+```bash
+docker-compose exec crust-api-system cli
+```
+
+Among other helper tools, you can reset system roles and their privileges, assign roles to users etc.
+
+Role resetting:
+```bash
+docker-compose exec crust-api-system cli roles reset
+```
+
+List users:
+```bash
+docker-compose exec crust-api-system cli users list
+```
+
+Assign "Administrators" (ID=2) role to a specific user:
+```bash
+docker-compose exec crust-api-system cli roles useradd 2 83986549888253955
+```
+
+
 ### Troubleshooting
 
 #### MySQL refuses to start due to write access to `data/crust-db`. 
