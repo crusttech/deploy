@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  crust-db:
+    image: percona:8.0.15-5
+    env_file:
+      - config.crust-db.env
+    volumes:
+      - ./data/crust-db:/var/lib/mysql
+    restart: on-failure
+
+  crust:
+    image: crusttech/crust:${CRUST_VERSION}
+    depends_on:
+      - crust-db
+    env_file:
+      - config.crust-api.env
+      - config.crust-api-system.env
+    environment:
+      VIRTUAL_HOST:            ${DOMAIN}
+      LETSENCRYPT_HOST:        ${DOMAIN}
+      AUTH_JWT_COOKIE_DOMAIN:  ${DOMAIN}
+    volumes:
+      - ./data/crust-api-system/store:/crust/var/store
+      - ./config.crust-webapp.js:/crust/webapp/config.js:ro
+      - ./config.crust-webapp.js:/crust/webapp/crm/config.js:ro
+      - ./config.crust-webapp.js:/crust/webapp/messaging/config.js:ro
+      - ./config.crust-webapp.js:/crust/webapp/admin/config.js:ro
+    restart: on-failure

@@ -1,0 +1,16 @@
+const domain = 'local.crust.tech'
+
+window.CrustConfig = {
+  system: {
+    baseUrl: `https://${domain}/system/`,
+  },
+  messaging: {
+    baseUrl: `https://${domain}/messaging/`,
+  },
+  crm: {
+    baseUrl: `https://${domain}/crm/`,
+  },
+  webapp: {
+    baseUrl: `https://${domain}`,
+  },
+}

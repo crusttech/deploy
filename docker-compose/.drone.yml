@@ -1,0 +1,6 @@
+pipeline:
+  build:
+    image: alpine:3.7
+    commands:
+      - apk --no-cache add gawk make rsync
+      - make build
