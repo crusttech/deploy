@@ -1,0 +1,80 @@
+version: '3.1'
+
+services:
+  db:
+    image: percona:8.0
+    networks:
+      - crust
+    env_file:
+      - .env
+    volumes:
+      - ./data/db:/var/lib/mysql
+    restart: on-failure
+
+  api-system:
+    image: crusttech/api-system:${CRUST_VERSION}
+    depends_on:
+      - db
+    networks:
+      - proxy
+      - crust
+    env_file:
+      - .env
+    environment:
+      VIRTUAL_HOST:            system.api.${DOMAIN}
+      LETSENCRYPT_HOST:        system.api.${DOMAIN}
+    volumes:
+      - ./data/api-system/store:/crust/var/store
+    restart: on-failure
+
+  api-crm:
+    image: crusttech/api-crm:${CRUST_VERSION}
+    depends_on:
+      - db
+    networks:
+      - proxy
+      - crust
+    env_file:
+      - .env
+    environment:
+      VIRTUAL_HOST:     crm.api.${DOMAIN}
+      LETSENCRYPT_HOST: crm.api.${DOMAIN}
+    volumes:
+      - ./data/api-crm/store:/crust/var/store
+    restart: on-failure
+
+  api-messaging:
+    image: crusttech/api-messaging:${CRUST_VERSION}
+    depends_on:
+      - db
+    networks:
+      - proxy
+      - crust
+    env_file:
+      - .env
+    environment:
+      VIRTUAL_HOST:     messaging.api.${DOMAIN}
+      LETSENCRYPT_HOST: messaging.api.${DOMAIN}
+    volumes:
+      - ./data/api-messaging/store:/crust/var/store
+    restart: on-failure
+
+  webapp:
+    image: crusttech/webapp:${CRUST_VERSION}
+    networks:
+      - proxy
+    env_file:
+      - .env
+    environment:
+      VIRTUAL_HOST:     ${DOMAIN}
+      LETSENCRYPT_HOST: ${DOMAIN}
+    depends_on:
+      - api-crm
+      - api-messaging
+      - api-system
+    restart: on-failure
+
+networks:
+  crust:
+  proxy:
+    external: true

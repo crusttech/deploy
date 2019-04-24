@@ -2,8 +2,8 @@
 *.iml
 .cert
 .idea
-api.*.env
-webapp.*.config.js
-*/.env
-NOTES
 TODO
+/data
+/.env
+/config.*.env
+/config.*.js
