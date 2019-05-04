@@ -26,7 +26,7 @@ limitations.
 
  - `$DOMAIN`
  - `system.api.${DOMAIN}`
- - `crm.api.${DOMAIN}`
+ - `compose.api.${DOMAIN}`
  - `messaging.api.${DOMAIN}`
 
 Make sure all domains point to where you host your files. If your domain registrar/dns service provider supports
@@ -72,7 +72,7 @@ backup storage space.
 #### Crust
 - `db` - a database instance for CRUST,
 - `system` - the system service for CRUST,
-- `crm` - the CRM service for CRUST,
+- `compose` - the Compose service for CRUST,
 - `messaging` - the Messaging service for CRUST,
 - `webapp` - the complete webapp for CRUST
 

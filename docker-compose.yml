@@ -27,8 +27,8 @@ services:
       - ./data/api-system/store:/crust/var/store
     restart: on-failure
 
-  api-crm:
-    image: crusttech/api-crm:${CRUST_VERSION}
+  api-compose:
+    image: crusttech/api-compose:${CRUST_VERSION}
     depends_on:
       - db
     networks:
@@ -37,10 +37,10 @@ services:
     env_file:
       - .env
     environment:
-      VIRTUAL_HOST:     crm.api.${DOMAIN}
-      LETSENCRYPT_HOST: crm.api.${DOMAIN}
+      VIRTUAL_HOST:     compose.api.${DOMAIN}
+      LETSENCRYPT_HOST: compose.api.${DOMAIN}
     volumes:
-      - ./data/api-crm/store:/crust/var/store
+      - ./data/api-compose/store:/crust/var/store
     restart: on-failure
 
   api-messaging:
@@ -69,7 +69,7 @@ services:
       VIRTUAL_HOST:     ${DOMAIN}
       LETSENCRYPT_HOST: ${DOMAIN}
     depends_on:
-      - api-crm
+      - api-compose
       - api-messaging
       - api-system
     restart: on-failure
